@@ -103,8 +103,14 @@ const UI = {
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   },
 
+  hideWelcome() {
+    const w = document.getElementById("welcome-screen");
+    if (w) w.style.display = "none";
+  },
+
   showChat() {
-    // chat-area is always visible — kept for compatibility
+    const c = document.getElementById("chat-area");
+    if (c) c.style.display = "flex";
   },
 
 
