@@ -71,7 +71,7 @@ async function supabaseSaveSession(session, userId, extras = {}) {
   const sb = initSupabase();
   if (!sb || !userId) return;
   try {
-    await sb.from("orienteering_sessions").upsert({
+    await sb.from("the_map_sessions").upsert({
       user_id:    userId,
       session:    session,
       phase:      session.phase,
@@ -146,6 +146,8 @@ const App = {
 
   // ─── Start ─────────────────────────────────────────────────────────────────
   async startConversation() {
+    UI.hideWelcome();
+    UI.showChat();
     UI.showNavBar(
       () => this.goBack(),
       () => this.restart()
@@ -628,11 +630,12 @@ const App = {
     this.pendingMapData = null;
     this.stopTimers();
     document.getElementById("chat-container").innerHTML = "";
+    document.getElementById("chat-area").style.display = "none";
     document.getElementById("progress-container").style.display = "none";
     document.getElementById("progress-fill").style.width = "0%";
     document.getElementById("input-area").style.display = "none";
+    document.getElementById("welcome-screen").style.display = "";
     UI.hideNavBar();
-    this.startConversation();
   },
 
   addAssistantMessage(text) {
@@ -646,20 +649,5 @@ const App = {
   }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  App.init();
-
-  // Auto-start — wait for lifeos:auth (fired by auth-init.js whether signed in or not).
-  // Fallback: if lifeos:auth hasn't fired within 5s (e.g. auth-init.js missing or slow),
-  // start anyway so the tool never loads to a blank screen.
-  let started = false;
-  function safeStart() {
-    if (started) return;
-    started = true;
-    App.startConversation();
-  }
-
-  window.addEventListener('lifeos:auth', safeStart, { once: true });
-  setTimeout(safeStart, 5000); // safety net
-});
+document.addEventListener("DOMContentLoaded", () => App.init());
 window.App = App;
