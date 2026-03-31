@@ -118,6 +118,7 @@
   window.SUPABASE_ANON_KEY = "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-";
 </script>
 
+<script src="/auth-guard.js"></script>
 <script src="/auth-init.js"></script>
 <script src="/ui.js"></script>
 <script src="/glossary-tooltip.js"></script>
@@ -126,29 +127,17 @@
 <script>
 window.addEventListener('lifeos:auth', function(e) {
   var u = e.detail && e.detail.user;
-
-  // Update profile dot
   var d = document.getElementById('nk-profile-dot');
-  if (d) {
-    if (u) {
-      var i = ((u.email||'').split('@')[0].charAt(0)||'?').toUpperCase();
-      d.textContent = i;
-      d.href = 'https://nextus.world/profile.html';
-      d.title = 'Your profile';
-      d.style.display = 'flex';
-    } else {
-      // Not signed in — show sign-in arrow
-      d.textContent = '→';
-      d.href = 'https://nextus.world/login.html?redirect=' + encodeURIComponent(window.location.href);
-      d.title = 'Sign in';
-      d.style.display = 'flex';
-    }
+  if (d && u) {
+    var i = ((u.email||'').split('@')[0].charAt(0)||'?').toUpperCase();
+    d.textContent = i;
+    d.href = 'https://nextus.world/profile.html';
+    d.title = 'Your profile';
+    d.style.display = 'flex';
   }
-
-  // Init app regardless of auth state — The Map allows anonymous use
-  // with a sign-in prompt mid-session (10 min warning) and at results
   if (window.App) {
     App.init();
+    App.startConversation();
   }
 }, { once: true });
 </script>
