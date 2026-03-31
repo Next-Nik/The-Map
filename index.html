@@ -162,7 +162,9 @@ window.addEventListener('lifeos:auth', function(e) {
     }
     if (window.App) App.startConversation();
   } else {
-    // Not signed in — show modal at point of action
+    // Not signed in — clear any stale localStorage tokens on this domain
+    try { localStorage.removeItem('sb-tphbpwzozkskytoichho-auth-token'); } catch(e) {}
+    // Show sign-in modal at point of action
     showMapAuthModal();
   }
 }, { once: true });

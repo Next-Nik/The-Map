@@ -162,7 +162,7 @@ const App = {
     const chatContainer = document.getElementById("chat-container");
     const typingEl = UI.createTypingIndicator();
     chatContainer.appendChild(typingEl);
-    UI.scrollToBottom();
+    UI.scrollToMessage(typingEl);
 
     try {
       const data = await this.callAPI([]);
@@ -350,7 +350,7 @@ const App = {
     if (data.message) {
       const msgEl = UI.createAssistantMessage(data.message);
       chatContainer.appendChild(msgEl);
-      setTimeout(() => msgEl.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      setTimeout(() => msgEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
 
       // Wire glossary tooltips on welcome message
       if (data.phase === "welcome" && window.GlossaryTooltip) {
@@ -396,7 +396,7 @@ const App = {
 
     const mapEl = this.renderFinalMap(mapData, session);
     chatContainer.appendChild(mapEl);
-    setTimeout(() => mapEl.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+    setTimeout(() => mapEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
 
     // Save to Supabase if signed in — include horizon_goal_system from mapData
     if (this.userId) {
@@ -432,7 +432,7 @@ const App = {
 
     wrapper.appendChild(lightCard);
     chatContainer.appendChild(wrapper);
-    setTimeout(() => wrapper.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+    setTimeout(() => wrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
   },
 
   // ─── Full map render ────────────────────────────────────────────────────────

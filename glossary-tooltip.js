@@ -15,7 +15,7 @@
 
 const GlossaryTooltip = (function () {
 
-  const GLOSSARY_URL = 'https://nextus.world/glossary.json';
+  const GLOSSARY_URL = '/glossary.json';
   const APPENDIX_BASE = 'https://nextus.world';
 
   let _glossary = null;
