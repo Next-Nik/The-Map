@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css" />
   <style>
-    /* ── Site nav integration ── */
     :root {
       --bg-warm: #F5F2EC;
       --gold-rule: rgba(200,146,42,0.20);
@@ -22,17 +21,14 @@
     .nk-nav-links { display:flex;align-items:center;gap:28px; }
     .nk-nav-links a { font-family:var(--serif-sc);font-size:13px;letter-spacing:0.10em;color:rgba(15,21,35,0.78);text-decoration:none;transition:color 0.2s; }
     .nk-nav-links a:hover { color:#0F1523; }
-    .nk-nav-links a.active { color:#C8922A; }
+    .nk-nav-links a.active { color:#A8721A; }
     .nk-hamburger { display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px; }
     .nk-hamburger span { display:block;width:22px;height:1.5px;background:rgba(15,21,35,0.78);border-radius:1px; }
-    .nk-mobile-menu { display:none;flex-direction:column;background:#FFFFFF;border-bottom:1px solid var(--gold-rule);padding:8px 0; }
+    .nk-mobile-menu { display:none;flex-direction:column;background:#FAFAF7;border-bottom:1px solid var(--gold-rule);padding:8px 0;position:fixed;top:64px;left:0;right:0;z-index:999; }
     .nk-mobile-menu.open { display:flex; }
     .nk-mobile-menu a { font-family:var(--serif-sc);font-size:13px;letter-spacing:0.10em;color:#0F1523;text-decoration:none;padding:14px 32px;border-bottom:1px solid var(--gold-faint); }
-    .nk-profile-dot { width:32px;height:32px;border-radius:50%;background:rgba(200,146,42,0.02);border:1.5px solid rgba(200,146,42,0.78);display:flex;align-items:center;justify-content:center;font-family:var(--serif-sc);font-size:13px;font-weight:600;color:#C8922A;text-decoration:none;flex-shrink:0;transition:all 0.2s; }
+    .nk-profile-dot { width:32px;height:32px;border-radius:50%;background:rgba(200,146,42,0.02);border:1.5px solid rgba(200,146,42,0.78);display:none;align-items:center;justify-content:center;font-family:var(--serif-sc);font-size:13px;font-weight:600;color:#A8721A;text-decoration:none;flex-shrink:0;transition:all 0.2s; }
     .nk-profile-dot:hover { background:rgba(200,146,42,0.08);border-color:rgba(200,146,42,1);transform:translateY(-1px); }
-
-    /* Offset container for fixed nav — handled in style.css */
-
     @media (max-width:640px) {
       .nk-nav-inner { padding:0 24px; }
       .nk-nav-links { display:none; }
@@ -54,7 +50,7 @@
       <a href="https://nextus.world/about.html">About</a>
       <a href="https://nextus.world/podcast.html">Podcast</a>
     </div>
-    <a href="https://nextus.world/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in" style="display:none;">→</a>
+    <a href="https://nextus.world/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in">&#8594;</a>
     <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -65,7 +61,7 @@
   <a href="https://nextus.world/work-with-nik.html">Work with Nik</a>
   <a href="https://nextus.world/about.html">About</a>
   <a href="https://nextus.world/podcast.html">Podcast</a>
-  <a href="https://nextus.world/login.html">Sign in →</a>
+  <a href="https://nextus.world/login.html">Sign in &#8594;</a>
 </div>
 
 <div class="container">
@@ -83,13 +79,22 @@
     <div class="progress-label" id="progress-label">Beginning</div>
   </div>
 
+  <!-- Welcome screen -->
+  <div id="welcome-screen">
+    <div class="entry-card">
+      <p class="entry-body">Seven domains. One honest picture of where you are right now.</p>
+      <button class="carousel-begin" id="begin-btn">Begin your map</button>
+    </div>
+  </div>
+
   <!-- Chat area -->
-  <div id="chat-area" style="display:flex; flex-direction:column; flex:1;">
+  <div id="chat-area" style="display:none; flex-direction:column; flex:1;">
     <div id="wheel-container" class="wheel-container" style="display:none;">
       <canvas id="domain-wheel" width="280" height="280"></canvas>
       <div id="wheel-legend" class="wheel-legend"></div>
     </div>
     <div id="chat-container"></div>
+    <div id="light-results-wrapper"></div>
   </div>
 
 </div>
@@ -115,7 +120,38 @@
 
 <script src="/auth-init.js"></script>
 <script src="/ui.js"></script>
+<script src="/glossary-tooltip.js"></script>
 <script src="/app.js"></script>
+
+<script>
+window.addEventListener('lifeos:auth', function(e) {
+  var u = e.detail && e.detail.user;
+
+  // Update profile dot
+  var d = document.getElementById('nk-profile-dot');
+  if (d) {
+    if (u) {
+      var i = ((u.email||'').split('@')[0].charAt(0)||'?').toUpperCase();
+      d.textContent = i;
+      d.href = 'https://nextus.world/profile.html';
+      d.title = 'Your profile';
+      d.style.display = 'flex';
+    } else {
+      // Not signed in — show sign-in arrow
+      d.textContent = '→';
+      d.href = 'https://nextus.world/login.html?redirect=' + encodeURIComponent(window.location.href);
+      d.title = 'Sign in';
+      d.style.display = 'flex';
+    }
+  }
+
+  // Init app regardless of auth state — The Map allows anonymous use
+  // with a sign-in prompt mid-session (10 min warning) and at results
+  if (window.App) {
+    App.init();
+  }
+}, { once: true });
+</script>
 
 </body>
 </html>
