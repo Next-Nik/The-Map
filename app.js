@@ -71,7 +71,7 @@ async function supabaseSaveSession(session, userId, extras = {}) {
   const sb = initSupabase();
   if (!sb || !userId) return;
   try {
-    await sb.from("the_map_sessions").upsert({
+    await sb.from("orienteering_sessions").upsert({
       user_id:    userId,
       session:    session,
       phase:      session.phase,
@@ -351,6 +351,36 @@ const App = {
       const msgEl = UI.createAssistantMessage(data.message);
       chatContainer.appendChild(msgEl);
       setTimeout(() => msgEl.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+
+      // Wire glossary tooltips on welcome message
+      if (data.phase === "welcome" && window.GlossaryTooltip) {
+        const MAP_DOMAIN_TERMS = [
+          ["Path", "life-os-path"], ["Spark", "life-os-spark"], ["Body", "life-os-body"],
+          ["Finances", "life-os-finances"], ["Relationships", "life-os-relationships"],
+          ["Inner Game", "life-os-inner-game"], ["Outer Game", "life-os-outer-game"],
+          ["Horizon Life", "horizon-goals"], ["Horizon Self", "horizon-self"]
+        ];
+        MAP_DOMAIN_TERMS.forEach(([text, key]) => GlossaryTooltip.wrapTerm(msgEl, text, key));
+      }
+    }
+
+    // Auto-advance: welcome → first domain question
+    if (data.autoAdvance && data.phase === "welcome") {
+      UI.setInputMode("none");
+      const delay = data.advanceDelay || 2200;
+      setTimeout(() => {
+        const typingEl = UI.createTypingIndicator();
+        chatContainer.appendChild(typingEl);
+        UI.scrollToMessage(typingEl);
+        App.callAPI([]).then(nextData => {
+          typingEl.remove();
+          App.handleAPIResponse(nextData);
+        }).catch(err => {
+          typingEl.remove();
+          console.error("Welcome auto-advance error:", err);
+        });
+      }, delay);
+      return;
     }
 
     UI.setInputMode(data.complete ? "none" : (data.inputMode || "text"));
