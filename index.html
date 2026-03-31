@@ -79,16 +79,8 @@
     <div class="progress-label" id="progress-label">Beginning</div>
   </div>
 
-  <!-- Welcome screen -->
-  <div id="welcome-screen">
-    <div class="entry-card">
-      <p class="entry-body">Seven domains. One honest picture of where you are right now.</p>
-      <button class="carousel-begin" id="begin-btn">Begin your map</button>
-    </div>
-  </div>
-
   <!-- Chat area -->
-  <div id="chat-area" style="display:none; flex-direction:column; flex:1;">
+  <div id="chat-area" style="display:flex; flex-direction:column; flex:1;">
     <div id="wheel-container" class="wheel-container" style="display:none;">
       <canvas id="domain-wheel" width="280" height="280"></canvas>
       <div id="wheel-legend" class="wheel-legend"></div>
@@ -118,7 +110,6 @@
   window.SUPABASE_ANON_KEY = "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-";
 </script>
 
-<script src="/auth-guard.js"></script>
 <script src="/auth-init.js"></script>
 <script src="/ui.js"></script>
 <script src="/glossary-tooltip.js"></script>
@@ -134,11 +125,14 @@ window.addEventListener('lifeos:auth', function(e) {
     d.href = 'https://nextus.world/profile.html';
     d.title = 'Your profile';
     d.style.display = 'flex';
+  } else if (!u && d) {
+    // Not signed in — redirect to login
+    var returnUrl = encodeURIComponent(window.location.href);
+    window.location.href = 'https://nextus.world/login.html?redirect=' + returnUrl;
+    return;
   }
-  if (window.App) {
-    App.init();
-    App.startConversation();
-  }
+  // Signed in — start the tool
+  if (window.App) App.startConversation();
 }, { once: true });
 </script>
 
